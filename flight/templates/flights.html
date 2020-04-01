@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Select Flight</title>
+</head>
+<body style="background-color: #cad5e8">
+	<h1><p align="center">Select Location, Travel Date and Flight</p></h1>
+
+
+	<table style="width: 100%">
+	<form action="/show_flights" method="POST">
+
+	<h2><p>Your Destination is Edmonton</p></h2>
+	<tr>
+		<th><h3>Select Your Location:</h3></th>
+		<th><h3>Select Date:</h3></th>
+		<th><h3>Select Trip:</h3></th>
+	</tr>
+	<tr>
+		<td align="center"><select id="departure">
+			  <option value="Toronto">Toronto</option>
+			  <option value="Vancouver">Vancouver</option>
+			  <option value="Halifax">Halifax</option>
+			  <option value="Montreal">Montreal</option>
+			  <option value="Edmonton">Edmonton</option>
+			  <option value="Calgary">Calgary</option>
+			  <option value="Burnaby">Burnaby</option>
+			  <option value="Cape Bretton">Cape Bretton</option>
+			  <option value="Fredericton">Fredericton</option>
+			  <option value="Saskatoon">Saskatoon</option>
+		</select></td>
+		<td align="center"><input type="date" id="flight_date" name="flight_date"></td>
+		<td align="center">
+			<input type="radio" id="round_trip" name="round_trip" value="round_trip">
+  			<label for="round_trip">One Way</label>
+  			<input type="radio" id="round_trip" name="round_trip" value="round_trip">
+  			<label for="round_trip">Round Trip</label>
+		</td>
+	</tr>
+	<tr></tr><tr></tr>
+	<tr></tr><tr></tr>
+	<tr></tr><tr></tr>
+	<tr></tr><tr></tr>
+	<td></td>
+	<td align="center" padding="100px"><button type="submit">Find Flights</button></td>
+	</form>
+	</table>
+
+</body>
+</html>
