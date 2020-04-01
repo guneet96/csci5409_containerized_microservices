@@ -10,14 +10,15 @@
 	<table style="width: 100%">
 	<form action="/show_flights" method="POST">
 
-	<h2><p>Your Destination is Edmonton</p></h2>
+	<h2><p>Your Destination is {{ city_name }}</p></h2>
 	<tr>
 		<th><h3>Select Your Location:</h3></th>
+		<!-- <th><h3>Select Your Destination:</h3></th> -->
 		<th><h3>Select Date:</h3></th>
 		<th><h3>Select Trip:</h3></th>
 	</tr>
 	<tr>
-		<td align="center"><select id="departure">
+		<td align="center"><select id="source" name="source">
 			  <option value="Toronto">Toronto</option>
 			  <option value="Vancouver">Vancouver</option>
 			  <option value="Halifax">Halifax</option>
@@ -29,6 +30,19 @@
 			  <option value="Fredericton">Fredericton</option>
 			  <option value="Saskatoon">Saskatoon</option>
 		</select></td>
+<!-- 
+		<td align="center"><select id="destination" name="destination">
+			  <option value="Toronto">Toronto</option>
+			  <option value="Vancouver">Vancouver</option>
+			  <option value="Halifax">Halifax</option>
+			  <option value="Montreal">Montreal</option>
+			  <option value="Edmonton">Edmonton</option>
+			  <option value="Calgary">Calgary</option>
+			  <option value="Burnaby">Burnaby</option>
+			  <option value="Cape Bretton">Cape Bretton</option>
+			  <option value="Fredericton">Fredericton</option>
+			  <option value="Saskatoon">Saskatoon</option>
+		</select></td> -->
 		<td align="center"><input type="date" id="flight_date" name="flight_date"></td>
 		<td align="center">
 			<input type="radio" id="round_trip" name="round_trip" value="round_trip">
@@ -45,6 +59,19 @@
 	<td align="center" padding="100px"><button type="submit">Find Flights</button></td>
 	</form>
 	</table>
+	<br><br><br><br><br><br><br>
+	
+
+	<!-- #Edit This and make it pretty -->
+	<h3>Results:</h3><br>
+	<ol>
+		{% for dict in flight_list: %}
+		<li>
+			<a href="http://127.0.0.1:5000/fc/{{ dict.get('flightcode') }}">{{ dict.get('flightcode') }}</a>
+			
+		</li>	
+		{% endfor %}
+	</ol>
 
 </body>
 </html>

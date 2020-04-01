@@ -1,27 +1,44 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, url_for, request, session, redirect
 from flask_pymongo import PyMongo
-from pymongo import MongoClient
+
 import datetime
 import json
 import os
 
 browse = Flask(__name__)
 
-
-browse.config['MONGO_URI'] = "mongodb://localhost:27017/travel_app"
-browse.config['MONGO_DBNAME'] = "travel_app"
+browse.config['MONGO_URI'] = "mongodb://localhost:27017/p_db"
+browse.config['MONGO_DBNAME'] = "p_db"
 mongo = PyMongo(browse)
-travel_app = mongo.db
+p_db = mongo.db
 
-@browse.route('/<uname>', methods=['GET','POST'])
-def main(uname):
-	uname = uname
-	return render_template('webpage1.html', uname=uname)
+@browse.route('/', methods=['GET','POST'])
+def index():
+	return render_template('destination.html')
 
+@browse.route('/browse', methods = ['GET', 'POST'])
+def browse_places():
+	province = request.args.get('province')
+	places = p_db["PlaceDetails"]
+	places_fetch = places.find({"province":province})
 
-@browse.route('/api/browse', methods=['GET', 'POST'])
-def browse_api():
-	places = travel_app["places"]
+	places_dict = {}
+	counter=1
+	for i in places_fetch:
+		c = i.get('place_id')
+		i['_id'] = c
+		places_dict[c]=i
+		counter+=1
+
+	places_output = {}
+	for i in places_dict:
+		places_output[places_dict[i].get('name')] = places_dict[i].get('airport')
+		places_output["city"] = places_dict[i].get('city')
+	return render_template('destination.html', places_output=places_output)
+
+@browse.route('/api/browse', methods=['POST', 'GET'])
+def browse_places_api():
+	places = p_db["PlaceDetails"]
 	province = request.args.get("province")
 	print(province)
 	places_fetch = places.find({"province":province})
@@ -40,6 +57,5 @@ def browse_api():
 	return jsonify(places_dict)
 
 
-@browse.route('/destination', methods=['GET'])
-def destination():
-	return render_template('destination.html')
+if __name__ == '__main__':
+	browse.run(debug=True)

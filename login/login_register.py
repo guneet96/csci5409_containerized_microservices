@@ -8,13 +8,13 @@ from random import randint
 app = Flask(__name__)
 app.secret_key = 'mysecret'
 
-app.config['MONGO_DBNAME'] = 'travel_app'
-app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/travel_app'
+app.config['MONGO_DBNAME'] = 'p_db'
+app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/p_db'
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'cloud.group.16.proj@gmail.com'
-app.config['MAIL_PASSWORD'] = ''
+app.config['MAIL_PASSWORD'] = 'duolc61_'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
@@ -22,12 +22,14 @@ mongo = PyMongo(app)
 mail = Mail(app)
 
 
-@app.route('/')
-def index():
+
+@app.route('/fc/<final_flight_code>')
+def index(final_flight_code):
+	session['final_flight_code'] = final_flight_code
 	return render_template('index.html')
 	
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['GET','POST'])
 def login():
 	users = mongo.db.users
 	username = request.form.get('username')
@@ -37,13 +39,19 @@ def login():
 	print(login_user)
 	if login_user:
 		password = request.form.get('password')
-		# hash_pw = generate_password_hash(passw)
 		if check_password_hash(login_user['password'], password):
-		# bcrypt.hashpw(request.form['pass'].encode('utf-8'), login_user['password']) == login_user['password']:
-			session['email'] = username
+			email = login_user['email']
+			print(email)
+			otp = randint(100000, 999999)
+			msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
+			msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your One-Time-Password (OTP) is " + str(otp)
+			mail.send(msg)			
 
-			# return redirect(url_for('login'))
-			return session['username']
+			session['email'] = email
+			session['username'] = username
+			session['otp'] = otp
+
+			return render_template('otp.html')
 			return render_template('flights.html')
 #### What after login. Create a workflow.
 
@@ -56,23 +64,28 @@ def api_login():
 	users = mongo.db.users
 	username = request.args.get("username")
 	password = request.args.get("password")
-
 	login_user = users.find_one({'name': username})
-
-
 	if login_user:
 		if check_password_hash(login_user['password'], password):
+			email = login_user['email']
+			print(email)
+			otp = randint(100000, 999999)
+			msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
+			msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your One-Time-Password (OTP) is " + str(otp)
+			mail.send(msg)			
+
+			session['email'] = email
 			session['username'] = username
-			# return redirect(url_for('login'))
-			return "Authenticated"
+			session['otp'] = otp
+			
+			return str(otp)
 		else:
-			return "Not Authenticated"
+			return "Wrong password"
 	return "User doesn't exist"
 
 
-@app.route('/payment', methods=['GET', 'POST'])
-def payment():
-	if 
+
+
 
 
 
@@ -110,20 +123,26 @@ def register():
 
 @app.route('/otp', methods = ['POST'])
 def otp():
+	# print(session['email'])
+	# print(session['username'])
 	users = mongo.db.users
 	e_otp = request.form.get('otp')
-	print(e_otp)
-	print("-------")
-	print(session['otp'])
+	isuser = users.find_one({'name':session['username']})
+	# print(isuser)
 	if e_otp == str(session['otp']):
-		username = session['username']
-		hash_pw = session['password']
-		email = session['email']
-		users.insert({'name': username, 'password': hash_pw, 'email': email})
-		msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
-		msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your account has been verified."
-		mail.send(msg)
-		return render_template("login.html", success="User created")
+
+		if isuser is None:
+			username = session['username']
+			hash_pw = session['password']
+			email = session['email']
+			users.insert({'name': username, 'password': hash_pw, 'email': email})
+			msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
+			msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your account has been verified."
+			mail.send(msg)
+			return render_template("login.html", success="User created")
+		else:
+			return "logged in. Payment.html will come here. Payment details of flight code " + str(session['final_flight_code'])
+
 	else:
 		return render_template("otp.html", error="Wrong OTP entered. Please enter correct OTP")
 
@@ -158,7 +177,7 @@ def api_register():
 			session['password'] = hash_pw
 			session['email']	= email
 			session['otp'] = otp
-			return otp
+			return str(otp)
 		else:
 			return "Username taken."
 
@@ -166,22 +185,24 @@ def api_register():
 @app.route('/api/otp', methods = ['POST'])
 def api_otp():
 	users = mongo.db.users
-	otp = request.args.get("otp")
-	print(e_otp)
-	print("-------")
-	print(session['otp'])
+	e_otp = request.args.get("otp")
+	isuser = users.find_one({'name':session['username']})
+
 	if e_otp == str(session['otp']):
-		username = session['username']
-		hash_pw = session['password']
-		email = session['email']
-		users.insert({'name': username, 'password': hash_pw, 'email': email})
-		msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
-		msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your account has been verified."
-		mail.send(msg)
-		return "User created"
+		
+		if isuser is None:
+			username = session['username']
+			hash_pw = session['password']
+			email = session['email']
+			users.insert({'name': username, 'password': hash_pw, 'email': email})
+			msg = Message('Verification Required', sender = 'cloud.group.16.proj@gmail.com', recipients = [email])
+			msg.body = "Hello " + username + ", this is the multi factor authentication system of Cloud Computing Group 16. Your account has been verified."
+			mail.send(msg)
+			return "User created"
+		else:
+			return "authenticated"
 	else:
 		return "Wrong OTP entered. Please enter correct OTP"
-
 
 
 
