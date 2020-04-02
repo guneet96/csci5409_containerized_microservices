@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+<h1>E-Ticket</h1>
+<h3>Email Id : {{ email_id }}</h3>
+<h3>Booking ID : {{ booking_no }}</h3>
+<h4>Booked On : {{ date_time }}</h4>
+
+<hr>
+
+<h4>Onward Flight Details</h4>
+<h3><b>{{ departure_plc }} to {{ destination_plc }}</b>&ensp;&ensp;&ensp;{{ departure_date }}</h3>
+
+<table border='4' class='stats' cellspacing='0' align="center">
+	<tr>
+		<td><h4>&ensp;&ensp;&ensp;&ensp;&ensp;{{ flight_name }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4></td>
+		<td>
+			<h3><b>&ensp;&ensp;&ensp;&ensp;&ensp;{{ departure_time }}&ensp;&ensp;&ensp;&ensp;&ensp;</b></h3>
+			<h4>&ensp;&ensp;&ensp;&ensp;&ensp;{{ departure_date }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4>
+			<h4>&ensp;&ensp;&ensp;&ensp;&ensp;{{ departure_plc }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4>
+		</td>
+
+		<td>&ensp;&ensp;&ensp;&ensp;&ensp;{{ total_hour }}&ensp;&ensp;&ensp;&ensp;&ensp;</td>
+		
+		<td>
+			<h3><b>&ensp;&ensp;&ensp;&ensp;&ensp;{{ destination_time }}&ensp;&ensp;&ensp;&ensp;&ensp;</b></h3>
+			<h4>&ensp;&ensp;&ensp;&ensp;&ensp;{{ destination_date }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4>
+			<h4>&ensp;&ensp;&ensp;&ensp;&ensp;{{ destination_plc }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4>
+		</td>
+	</tr>
+	{% for i,traveller in data %}
+		<tr>
+			<td><h4>&ensp;&ensp;&ensp;&ensp;&ensp;#{{ i+1 }}&ensp;&ensp;&ensp;&ensp;&ensp;</h4></td>
+			<td colspan="3">
+				<h4>
+					<table>
+						
+					</table>
+					&ensp;&ensp;&ensp;&ensp;&ensp;{{ traveller['fname'] }}&nbsp;&ensp;{{ traveller['lname'] }}&ensp;&ensp;&ensp;&ensp;&ensp;
+				</h4>
+			</td>
+			
+		</tr>
+	{% endfor %}
+</table>
+
+<br>
+
+<table>
+	<tr>
+		<td><h2><b>Price per Ticket:</b></h2></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td><h2><b>{{ price }}</b></h2></td>
+	</tr>
+	<tr>
+		<td><h2><b>Total Amount Paid:</b></h2></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td><h2><b>{{ amount }}</b></h2></td>
+	</tr>
+</table>
+
+</body>
+</html>
